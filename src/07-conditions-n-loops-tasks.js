@@ -129,8 +129,11 @@ function isTriangle(/* a, b, c */) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  rect1['bottom'] = rect1['top'] + rect1['height'];
+  rect1['right'] = rect1['left'] + rect1['width'];
+
+  if (rect2[top] < rect1['top'] + rect1['height'])
 }
 
 
@@ -160,8 +163,9 @@ function doRectanglesOverlap(/* rect1, rect2 */) {
  *   { center: { x:0, y:0 }, radius:10 },  { x:10, y:10 }   => false
  *
  */
-function isInsideCircle(/* circle, point */) {
-  throw new Error('Not implemented');
+function isInsideCircle(circle, point) {
+  const sqrDistToPoint = (point.x - circle.center.x) ** 2 + (point.y - circle.center.y) ** 2;
+  return sqrDistToPoint < circle.radius ** 2;
 }
 
 
@@ -176,8 +180,20 @@ function isInsideCircle(/* circle, point */) {
  *   'abracadabra'  => 'c'
  *   'entente' => null
  */
-function findFirstSingleChar(/* str */) {
-  throw new Error('Not implemented');
+function findFirstSingleChar(str) {
+  const uniqueChars = [];
+  const nonUniqueChars = [];
+  for (let i = 0; i < str.length; i += 1) {
+    if (!nonUniqueChars.includes(str[i])) {
+      if (!uniqueChars.includes(str[i])) {
+        uniqueChars.push(str[i]);
+      } else if (uniqueChars.includes(str[i])) {
+        nonUniqueChars.push(str[i]);
+        uniqueChars.splice(uniqueChars.indexOf(str[i]), 1);
+      }
+    }
+  }
+  return uniqueChars.length > 0 ? uniqueChars[0] : null;
 }
 
 
@@ -203,8 +219,20 @@ function findFirstSingleChar(/* str */) {
  *   5, 3, true, true   => '[3, 5]'
  *
  */
-function getIntervalString(/* a, b, isStartIncluded, isEndIncluded */) {
-  throw new Error('Not implemented');
+function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
+  let min;
+  let max;
+  if (a > b) {
+    min = b;
+    max = a;
+  } else {
+    min = a;
+    max = b;
+  }
+  const opening = isStartIncluded ? '[' : '(';
+  const closing = isEndIncluded ? ']' : ')';
+
+  return `${opening}${min}, ${max}${closing}`;
 }
 
 
@@ -306,8 +334,33 @@ function getDigitalRoot(/* num */) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const brackets = {
+    '{': '}',
+    '[': ']',
+    '(': ')',
+    '<': '>',
+  };
+  if (str === null) {
+    return false;
+  }
+  const foundBrackets = [];
+  for (let i = 0; i < str.length; i += 1) {
+    if (Object.keys(brackets).includes(str[i])) {
+      foundBrackets.unshift(str[i]);
+    }
+    if (Object.values(brackets).includes(str[i])) {
+      if (foundBrackets.length === 0) {
+        return false;
+      }
+      if (str[i] === brackets[foundBrackets[0]]) {
+        foundBrackets.shift();
+      } else if (brackets[str[i]] !== foundBrackets[0]) {
+        return false;
+      }
+    }
+  }
+  return foundBrackets.length === 0;
 }
 
 

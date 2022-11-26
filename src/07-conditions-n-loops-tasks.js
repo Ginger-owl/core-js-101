@@ -72,8 +72,12 @@ function getFactorial(n) {
  *   5,10  =>  45 ( = 5+6+7+8+9+10 )
  *   -1,1  =>  0  ( = -1 + 0 + 1 )
  */
-function getSumBetweenNumbers(/* n1, n2 */) {
-  throw new Error('Not implemented');
+function getSumBetweenNumbers(n1, n2) {
+  let total = 0;
+  for (let i = n1; i <= n2; i += 1) {
+    total += i;
+  }
+  return total;
 }
 
 
@@ -92,8 +96,11 @@ function getSumBetweenNumbers(/* n1, n2 */) {
  *   10,1,1   =>  false
  *   10,10,10 =>  true
  */
-function isTriangle(/* a, b, c */) {
-  throw new Error('Not implemented');
+function isTriangle(a, b, c) {
+  if (a + b <= c || a + c <= b || b + c <= a) {
+    return false;
+  }
+  return true;
 }
 
 
@@ -129,8 +136,11 @@ function isTriangle(/* a, b, c */) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  if (rect1.top + rect1.height < rect2.top || rect1.left + rect1.width < rect2.left) {
+    return false;
+  }
+  return true;
 }
 
 
@@ -305,8 +315,12 @@ function isCreditCardNumber(/* ccn */) {
  *   10000 ( 1+0+0+0+0 = 1 ) => 1
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
-function getDigitalRoot(/* num */) {
-  throw new Error('Not implemented');
+function getDigitalRoot(num) {
+  const res = String(num).split('').reduce((sum, next) => sum + Number(next), 0);
+  if (res < 10) {
+    return res;
+  }
+  return getDigitalRoot(res);
 }
 
 
@@ -381,8 +395,15 @@ function isBracketsBalanced(str) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  let divident = num;
+  const resultArray = [];
+  while (divident > 0) {
+    const remainder = divident % n;
+    resultArray.unshift(remainder);
+    divident = parseInt(divident / n, 10);
+  }
+  return resultArray.join('');
 }
 
 

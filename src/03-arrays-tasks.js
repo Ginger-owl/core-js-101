@@ -439,10 +439,14 @@ function toStringList(arr) {
  *      { country: 'Russia',  city: 'Saint Petersburg' }
  *    ]
  */
-function sortCitiesArray(/* arr */) {
-  throw new Error('Not implemented');
+function sortCitiesArray(arr) {
+  return arr.sort((a, b) => {
+    if (a.country === b.country) {
+      return a.city < b.city ? -1 : 1;
+    }
+    return a.country < b.country ? -1 : 1;
+  });
 }
-
 /**
  * Creates an identity matrix of the specified size
  *
@@ -461,8 +465,16 @@ function sortCitiesArray(/* arr */) {
  *           [0,0,0,1,0],
  *           [0,0,0,0,1]]
  */
-function getIdentityMatrix(/* n */) {
-  throw new Error('Not implemented');
+function getIdentityMatrix(n) {
+  return Array.from({ length: n }, (_, lineInd) => {
+    const line = Array.from({ length: n }, (__, elInd) => {
+      if (elInd === lineInd) {
+        return 1;
+      }
+      return 0;
+    });
+    return line;
+  });
 }
 
 /**
@@ -493,8 +505,8 @@ function getIntervalArray(start, end) {
  *   [ 'a', 'a', 'a', 'a' ]  => [ 'a' ]
  *   [ 1, 1, 2, 2, 3, 3, 4, 4] => [ 1, 2, 3, 4]
  */
-function distinct(/* arr */) {
-  throw new Error('Not implemented');
+function distinct(arr) {
+  return [...new Set(arr)];
 }
 
 /**
@@ -527,10 +539,20 @@ function distinct(/* arr */) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
-}
+function group(array, keySelector, valueSelector) {
+  const keys = [...new Set(array.map((value) => keySelector(value)))];
+  const res = keys.map((key) => {
+    const cities = array.reduce((col, val) => {
+      if (keySelector(val) === key) {
+        col.push((valueSelector(val)));
+      }
+      return col;
+    }, []);
+    return [key, cities];
+  });
 
+  return res;
+}
 
 /**
  * Projects each element of the specified array to a sequence

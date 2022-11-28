@@ -297,8 +297,22 @@ function reverseInteger(num) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(ccn) {
+  const ccnArr = ccn.toString().split('').reverse();
+  const check = ccnArr.reduce((chechSum, num, ind) => {
+    let number = Number(num);
+    if (ind % 2 === 1) {
+      number *= 2;
+      if (number > 9) {
+        number = 1 + (number % 10);
+      }
+    }
+    return chechSum + number;
+  }, 0);
+  if (check % 10 === 0) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -419,8 +433,27 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  let commonPath = [];
+  pathes.forEach((path, ind) => {
+    const pathArr = path.split('/').slice(0, path.split('/').length - 1);
+    if (ind === 0) {
+      commonPath.push(...pathArr);
+    }
+    if (ind > 0) {
+      const checkedPath = [];
+      for (let i = 0; i < commonPath.length; i += 1) {
+        if (commonPath[i] === pathArr[i]) {
+          checkedPath.push(commonPath[i]);
+        }
+      }
+      commonPath = [...checkedPath];
+    }
+  });
+  if (commonPath.length === 0) {
+    return '';
+  }
+  return `${commonPath.join('/')}/`;
 }
 
 

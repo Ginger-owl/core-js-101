@@ -115,35 +115,128 @@ function fromJSON(proto, json) {
  *  For more examples see unit tests.
  */
 
-const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
-  },
+class CssSelectorBuilderClass {
+  constructor() {
+    this.cssElement = '';
+    this.cssId = '';
+    this.cssClass = '';
+    this.cssAttr = '';
+    this.cssPseudoClass = '';
+    this.cssPseudoElement = '';
+  }
 
-  id(/* value */) {
-    throw new Error('Not implemented');
-  },
+  stringify() {
+    let str = '';
 
-  class(/* value */) {
-    throw new Error('Not implemented');
-  },
+    if (this.cssElement) {
+      str += this.cssElement;
+    }
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
-  },
+    if (this.cssId) {
+      str += `#${this.cssId}`;
+    }
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
-  },
+    if (this.cssClass) {
+      str += this.cssClass;
+    }
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
-  },
+    if (this.cssAttr) {
+      str += this.cssAttr;
+    }
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
-  },
-};
+    if (this.cssPseudoClass) {
+      str += this.cssPseudoClass;
+    }
+
+    if (this.cssPseudoElement) {
+      str += `::${this.cssPseudoElement}`;
+    }
+    return str;
+  }
+
+  element(value) {
+    if (this.cssElement) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+
+    if (['cssId', 'cssClass', 'cssAttr', 'cssPseudoClass', 'cssPseudoElement'].some((name) => this[name])) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+    const obj = Object.create(this);
+    Object.assign(obj, this);
+    obj.cssElement = value;
+    return obj;
+  }
+
+  id(value) {
+    if (this.cssId) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+    if (['cssAttr', 'cssClass', 'cssPseudoClass', 'cssPseudoElement'].some((name) => this[name])) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+
+    const obj = Object.create(this);
+    Object.assign(obj, this);
+    obj.cssId = value;
+    return obj;
+  }
+
+  class(value) {
+    if (['cssAttr', 'cssPseudoClass', 'cssPseudoElement'].some((name) => this[name])) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+
+    const obj = Object.create(this);
+    Object.assign(obj, this);
+    obj.cssClass += `.${value}`;
+    return obj;
+  }
+
+  attr(value) {
+    if (['cssPseudoClass', 'cssPseudoElement'].some((name) => this[name])) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+
+    const obj = Object.create(this);
+    Object.assign(obj, this);
+    obj.cssAttr += `[${value}]`;
+    return obj;
+  }
+
+  pseudoClass(value) {
+    if (this.cssPseudoElement) {
+      throw new Error('Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element');
+    }
+
+    const obj = Object.create(this);
+    Object.assign(obj, this);
+    obj.cssPseudoClass += `:${value}`;
+    return obj;
+  }
+
+  pseudoElement(value) {
+    if (this.cssPseudoElement) {
+      throw new Error('Element, id and pseudo-element should not occur more then one time inside the selector');
+    }
+
+    const obj = Object.create(this);
+    Object.assign(obj, this);
+    obj.cssPseudoElement = value;
+    return obj;
+  }
+
+  combine(selector1, combinator, selector2) {
+    const obj = Object.create(this);
+    obj.selector1 = selector1.stringify();
+    obj.selector2 = selector2.stringify();
+    obj.combi = combinator;
+    obj.stringify = () => `${obj.selector1} ${obj.combi} ${obj.selector2}`;
+    return obj;
+  }
+}
+
+const cssSelectorBuilder = new CssSelectorBuilderClass();
 
 
 module.exports = {

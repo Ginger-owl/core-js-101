@@ -23,8 +23,8 @@
  *   getComposition(Math.sin, Math.asin)(x) => Math.sin(Math.asin(x))
  *
  */
-function getComposition(f, g) {
-  return (x) => f(g(x));
+function getComposition(...fns) {
+  return (initVal) => fns.reduceRight((val, fn) => fn(val), initVal);
 }
 
 
@@ -62,8 +62,18 @@ function getPowerFunction(exponent) {
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom() {
-  throw new Error('Not implemented');
+function getPolynom(...args) {
+  if (!args) {
+    return null;
+  }
+  const coefs = [...args].reverse();
+  return function calc(x) {
+    let result = +coefs[0];
+    for (let i = 1; i < coefs.length; i += 1) {
+      result += coefs[i] * (x ** i);
+    }
+    return result;
+  };
 }
 
 
@@ -139,7 +149,8 @@ function retry(/* func, attempts */) {
 function logger(/* func, logFunc */) {
   throw new Error('Not implemented');
 }
-
+/* const res = logger(Math.cos, console.log)
+res(1) */
 
 /**
  * Return the function with partial applied arguments
@@ -179,7 +190,6 @@ function partialUsingArguments(/* fn, ...args1 */) {
 function getIdGeneratorFunction(/* startFrom */) {
   throw new Error('Not implemented');
 }
-
 
 module.exports = {
   getComposition,
